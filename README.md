@@ -1,7 +1,9 @@
 # noVNC Display Container
 ```
 ```
-This image is intended to be used for displaying X11 applications from other containers in a browser. A stand-alone demo as well as a [Version 2](https://docs.docker.com/compose/compose-file/#version-2) composition.
+This image is intended to be used for displaying X11 applications from other containers in a browser. A stand-alone demo as well as a [Version 3](https://docs.docker.com/compose/compose-file/#version-3) composition.
+
+The [original image](https://github.com/theasp/docker-novnc) for use by the [Wisconsin Autonomous](https://wa.wisc.edu) student organization.
 
 ## Image Contents
 
@@ -14,23 +16,20 @@ This image is intended to be used for displaying X11 applications from other con
 
 ## Usage
 
-### Variables
+### Password
 
-You can specify the following variables:
-* `DISPLAY_WIDTH=<width>` (1024)
-* `DISPLAY_HEIGHT=<height>` (768)
-* `RUN_XTERM={yes|no}` (yes)
-* `RUN_FLUXBOX={yes|no}` (yes)
+**The password for the vnc container is `wa`!!!!** VNC cannot be run password-less.
 
 ### Stand-alone Demo
+
 Run:
 ```bash
-$ docker run --rm -it -p 8080:8080 theasp/novnc
+$ docker run --rm -it -p 8080:8080 -p 5900:5900 wiscauto/vnc
 ```
-Open a browser and see the `xterm` demo at `http://<server>:8080/vnc.html`
+Open a browser and see the desktop at `http://<server>:8080/`. If you're running this locally, `<server>` will most likely be `localhost`. Further, you can also access the VNC instance using a vnc viewer at `http://<server>:5900`.
 
-### V2 Composition
-A version of the [V2 docker-compose example](https://github.com/theasp/docker/blob/master/docker-compose.yml) is shown below to illustrate how this image can be used to greatly simplify the use of X11 applications in other containers. With just `docker-compose up -d`, your favorite IDE can be accessed via a browser.
+### V3 Composition
+A version of the V3 docker-compose example is shown below to illustrate how this image can be used to greatly simplify the use of X11 applications in other containers. With just `docker-compose up -d`, your favorite IDE can be accessed via a browser.
 
 Some notable features:
 * An `x11` network is defined to link the IDE and novnc containers
@@ -39,11 +38,10 @@ Some notable features:
 * The only exposed port is for HTTP browser connections
 
 ```
-version: '2'
+version: '3'
 services:
   ide:
     image: psharkey/intellij:latest
-#    image: psharkey/netbeans-8.1:latest
     environment:
       - DISPLAY=novnc:0.0
     depends_on:
@@ -51,25 +49,22 @@ services:
     networks:
       - x11
   novnc:
-    image: theasp/novnc:latest
-    environment:
-      # Adjust to your screen size
-      - DISPLAY_WIDTH=1600
-      - DISPLAY_HEIGHT=968
-      - RUN_XTERM=no
+    image: wiscauto/vnc:latest
     ports:
       - "8080:8080"
+			- "5900:5900"
     networks:
       - x11
 networks:
   x11:
 ```
+
 **If the IDE fails to start simply run `docker-compose restart <container-name>`.**
 
 ## On DockerHub / GitHub
 ___
-* DockerHub [theasp/novnc](https://hub.docker.com/r/theasp/novnc/)
-* GitHub [theasp/docker/novnc](https://github.com/theasp/docker)
+* DockerHub [wiscauto/vnc](https://hub.docker.com/r/wiscauto/vnc/)
+* GitHub [wiscauto/docker-vnc](https://github.com/wisconsinautonomous/docker-novnc)
 
 # Thanks
 ___

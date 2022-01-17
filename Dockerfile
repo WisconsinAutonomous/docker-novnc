@@ -23,8 +23,16 @@ ENV HOME=/root \
     DISPLAY=:0.0 \
     DISPLAY_WIDTH=1024 \
     DISPLAY_HEIGHT=768 \
-    RUN_XTERM=yes \
+    RUN_XTERM=no \
     RUN_FLUXBOX=yes
+
+# noVNC adjustments
+# Allows navigation to localhost:8080 instead of localhost:8080/vnc_lite.html
+RUN cp /usr/share/novnc/vnc_lite.html /usr/share/novnc/index.html
+# Set autoresizing to on
+RUN sed -i "/rfb.resizeSession = WebUtil.getConfigVar('resize', false);/a rfb.scaleViewport = true;rfb.resizeSession = true;" /usr/share/novnc/index.html
+
 COPY . /app
 CMD ["/app/entrypoint.sh"]
 EXPOSE 8080
+EXPOSE 5900
